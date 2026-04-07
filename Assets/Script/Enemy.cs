@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,9 +7,9 @@ public class Enemy : MonoBehaviour
     public Animator animator;
     public float speed = 5f;
     public float jump = 5f;
-    bool isGrounded = false;
+   // bool isGrounded = false;
     public float horizontalInput;
-    MoveWitch BasicMovement;
+    public MoveWitch BasicMovement;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -22,12 +21,12 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
-        FlipSprite();
+       // FlipSprite();
     }
 
-    void FlipSprite()
+ /*   void FlipSprite()
     {
         BasicMovement.FlipSprite();
     }
-    
+    */
 }

@@ -14,15 +14,15 @@ public class Healt : MonoBehaviour
     }
 
 
-private void OnTriggerEnter2D(Collider2D collision)
+/* private void OnTriggerEnter2D(Collider2D collision)
     {
-        Enemy enemy = collision.GetComponent<Enemy>();
+       Enemy enemy = collision.GetComponent<Enemy>();
         if (enemy)
         {
             //TakeDamage();
         }
-    }
-    private void TakeDamage(int damage)
+    }*/
+  /*  private void TakeDamage(int damage)
     {
         currentHealth-= damage;
         healtUI.UpdateHearts(currentHealth);
@@ -30,6 +30,6 @@ private void OnTriggerEnter2D(Collider2D collision)
         {
             Debug.Log("Game Over");
         }
-    }
+    }*/
 
 }
