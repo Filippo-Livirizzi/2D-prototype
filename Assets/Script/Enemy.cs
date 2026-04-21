@@ -2,31 +2,57 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    Rigidbody2D rb;
+    public Transform target;
+    Vector2 moveDirection;
+    float speed = 3f;
 
-    public Rigidbody2D rb;
-    public Animator animator;
-    public float speed = 5f;
-    public float jump = 5f;
-   // bool isGrounded = false;
-    public float horizontalInput;
-    public MoveWitch BasicMovement;
-    void Start()
+    Animator anim;
+    SpriteRenderer sr;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        BasicMovement = GetComponent<MoveWitch>();
+        anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
-    
+
     void Update()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-       // FlipSprite();
-    }
+        if (target)
+        {
+            Vector3 direction = (target.position - transform.position).normalized;
+            moveDirection = direction;
 
- /*   void FlipSprite()
-    {
-        BasicMovement.FlipSprite();
+            //flip sprite
+            if (direction.x > 0)
+            {
+                sr.flipX = false;
+            }
+            else if (direction.x < 0)
+            {
+                sr.flipX = true;
+            }
+            anim.SetFloat("xVelocity", Mathf.Abs(moveDirection.x));
+           // anim.SetFloat("yVelocity", moveDirection.y);
+            //  anim.SetBool("isMoving", moveDirection.magnitude > 0);
+
+        }
+
+
     }
-    */
+            private void FixedUpdate()
+        {
+            if (target)
+            rb.linearVelocity = new Vector2(moveDirection.x, moveDirection.y) * speed;
+            else
+                rb.linearVelocity = Vector2.zero;
+
+        }
+
+        public void StartChasing()
+    {
+        target = GameObject.FindGameObjectWithTag("Player").transform;
+    }
 }
