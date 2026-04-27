@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
     public Transform target;
     Vector2 moveDirection;
     float speed = 3f;
+    public float stoppingDistance = 0.5f;
 
     Animator anim;
     SpriteRenderer sr;
@@ -37,22 +38,28 @@ public class Enemy : MonoBehaviour
             anim.SetFloat("xVelocity", Mathf.Abs(moveDirection.x));
            // anim.SetFloat("yVelocity", moveDirection.y);
             //  anim.SetBool("isMoving", moveDirection.magnitude > 0);
-
         }
-
-
     }
             private void FixedUpdate()
         {
             if (target)
-            rb.linearVelocity = new Vector2(moveDirection.x, moveDirection.y) * speed;
+            {
+                float distanceToTarget = Vector2.Distance(transform.position, target.position);
+                
+                if (distanceToTarget > stoppingDistance)
+                    rb.linearVelocity = new Vector2(moveDirection.x, moveDirection.y) * speed;
+                else
+                    rb.linearVelocity = Vector2.zero;
+            }
             else
                 rb.linearVelocity = Vector2.zero;
-
         }
+
 
         public void StartChasing()
     {
         target = GameObject.FindGameObjectWithTag("Player").transform;
     }
+
+    
 }
