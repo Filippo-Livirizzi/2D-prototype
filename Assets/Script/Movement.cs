@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class MoveWitch : MonoBehaviour
 {
-
     private bool isFacingRight = false;
     public Rigidbody2D rb;
     public float speed = 5f;
@@ -10,6 +9,11 @@ public class MoveWitch : MonoBehaviour
 
     public float jumpPower = 5f;
     bool isGrounded = false;
+    bool justJumped = false; // ← NUOVO FLAG
+
+    public LayerMask whatisGround;
+    public float checkRadius = 0.2f;
+    public Transform groundCheck;
 
     public Animator animator;
 
@@ -19,63 +23,65 @@ public class MoveWitch : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         FlipSprite();
+
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
             isGrounded = false;
-            animator.SetBool("isJumping", !isGrounded);
-            
+            justJumped = true; // ← Blocca il controllo a terra
+            animator.SetBool("isJumping", true);
         }
-
     }
 
     void FixedUpdate()
     {
+        bool overlapResult = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatisGround);
+
+        Debug.Log($"overlapResult: {overlapResult} | isGrounded: {isGrounded} | justJumped: {justJumped}");
+
+        if (justJumped)
+        {
+            // Se la velocità verticale è negativa (sta cadendo), il salto è iniziato
+            if (rb.linearVelocity.y < 0)
+            {
+                justJumped = false;
+                isGrounded = overlapResult;
+            }
+        }
+        else
+        {
+            isGrounded = overlapResult;
+        }
+
         rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
 
         animator.SetFloat("xVelocity", Mathf.Abs(rb.linearVelocity.x));
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isJumping", !isGrounded);
 
+        //animator.SetBool("isJumping", !isGrounded && rb.linearVelocity.y != 0);
     }
 
-    public void FlipSprite() //funzione per far girare lo sprite quando cambia direzione
+    public void FlipSprite()
     {
-        if (!isFacingRight && horizontalInput < 0f || isFacingRight && horizontalInput > 0) // Se il personaggio sta guardando a destra e l'input è negativo (sinistra) o se il personaggio sta guardando a sinistra e l'input è positivo (destra)
+        if (!isFacingRight && horizontalInput < 0f || isFacingRight && horizontalInput > 0)
         {
-            isFacingRight = !isFacingRight; // Inverti il valore di isFacingRight
-            Vector2 ls = transform.localScale; // Ottieni la scala locale dell'oggetto
-            ls.x *= -1; // Inverti la scala sull'asse x per far girare lo sprite
-            transform.localScale = ls; //salva la nuova scala locale dell'oggetto
+            isFacingRight = !isFacingRight;
+            Vector2 ls = transform.localScale;
+            ls.x *= -1;
+            transform.localScale = ls;
         }
-
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.CompareTag("Ground"))
-        isGrounded = true;
-        animator.SetBool("isJumping", false);
-        if (rb.linearVelocity.y < 0)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-        }
-
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
+    /*  private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Ground"))
         {
-            isGrounded= false;
+            isGrounded = false;
         }
-    }
-
-
-
+    }*/
 }
